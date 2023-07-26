@@ -41,7 +41,7 @@ public class PackageInfo extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users user;
+    private Users users;
 
 
     @ManyToOne
@@ -49,11 +49,11 @@ public class PackageInfo extends BaseEntity{
     private PackageType packageType;
 
 
-    @OneToMany(mappedBy = "package_info", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "packageInfo", fetch = FetchType.EAGER)
     private Set<PackageTypeCredit> packageTypeCredits;
 
 
-    @OneToMany(mappedBy = "package_info", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "packageInfo", fetch = FetchType.EAGER)
     private Set<UsersPackageCredit> usersPackageCredits;
 
 

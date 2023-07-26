@@ -19,7 +19,7 @@ public class UsersPackageCredit  extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users user;
+    private Users users;
 
     @ManyToOne
     @JoinColumn(name = "package_id")

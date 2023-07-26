@@ -23,7 +23,7 @@ public class PackageType extends BaseEntity {
     @Column(name = "package_type_name", nullable = false)
     private String packageTypeName;
 
-    @OneToMany(mappedBy = "package_type", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "packageType", fetch = FetchType.EAGER)
     private Set<PackageInfo> packageInfoSet;
 
 
