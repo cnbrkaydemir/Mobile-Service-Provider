@@ -1,16 +1,18 @@
 package com.mobile_service_provider.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
-import java.util.Date;
+import java.sql.Date;
+import java.util.List;
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
+
+
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 public class Users extends BaseEntity{
 
     @Id
@@ -43,11 +45,11 @@ public class Users extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private UserGroup userGroup;
 
-    @OneToMany(mappedBy = "users", fetch = FetchType.EAGER)
-    private Set<PackageInfo> packageInfos;
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    private List<PackageInfo> packageInfos;
 
-    @OneToMany(mappedBy = "users", fetch = FetchType.EAGER)
-    private Set<UsersPackageCredit> credits;
+    @OneToMany(mappedBy = "users", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<UsersPackageCredit> credits;
 
 
 

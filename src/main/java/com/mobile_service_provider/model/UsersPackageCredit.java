@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Table(name = "user_package_credit")
 public class UsersPackageCredit  extends BaseEntity{
     @Id
-    @Column(name = "credit_id", nullable = false)
+    @Column(name = "user_credit_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(name = "utype_seqGen", sequenceName = "utype_seq", initialValue = 1)
     private int creditId;
@@ -25,11 +25,17 @@ public class UsersPackageCredit  extends BaseEntity{
     @JoinColumn(name = "package_id")
     private PackageInfo packageInfo;
 
+    @ManyToOne
+    @JoinColumn(name = "credit_id")
+    private Credit credits;
+
+
     @Enumerated(EnumType.STRING)
     private CreditType creditType;
 
-    @Column(name = "credit_amount")
+    @Column(name = "credit_amount", nullable = false)
     private BigDecimal creditAmount;
+
 
 
 

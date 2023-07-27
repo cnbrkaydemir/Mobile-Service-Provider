@@ -15,17 +15,21 @@ public class PackageTypeCredit extends BaseEntity{
     @Id
     @Column(name = "package_credit_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "ptype_seqGen", sequenceName = "ptype_seq", initialValue = 1)
+    @SequenceGenerator(name = "ptype_seqGen", sequenceName = "ptype_seq")
     private int creditId;
 
     @ManyToOne
     @JoinColumn(name = "package_id")
     private PackageInfo packageInfo;
 
+    @ManyToOne
+    @JoinColumn(name = "credit_id")
+    private Credit credits;
+
     @Enumerated(EnumType.STRING)
     private CreditType creditType;
 
-    @Column(name = "credit_amount")
+    @Column(name = "credit_amount", nullable = false)
     private BigDecimal creditAmount;
 
 

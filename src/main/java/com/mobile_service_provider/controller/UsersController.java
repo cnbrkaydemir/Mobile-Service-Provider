@@ -1,8 +1,10 @@
 package com.mobile_service_provider.controller;
 
+import com.mobile_service_provider.dto.PackageDto;
 import com.mobile_service_provider.dto.UsersDto;
 import com.mobile_service_provider.model.Users;
 import com.mobile_service_provider.service.UsersService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,20 +13,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
+@RequiredArgsConstructor
 public class UsersController {
 
 
     private final UsersService usersService;
 
-    @Autowired
-    public UsersController(UsersService usersService) {
-        this.usersService = usersService;
-    }
 
     @PostMapping("/create")
-    public ResponseEntity<Users> createUser(@RequestBody Users newUser){
-        Users user =  usersService.createUser(newUser);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<UsersDto> createUser(@RequestBody Users newUser){
+        UsersDto usersDto =  usersService.createUser(newUser);
+        return ResponseEntity.ok(usersDto);
     }
 
 
@@ -49,6 +48,18 @@ public class UsersController {
         return ResponseEntity.ok(isDeleted);
     }
 
+    @PostMapping("/register_package")
+    public ResponseEntity<Boolean> registerPackage(@RequestParam int userId, @RequestParam int packageId){
+        Boolean  register =  usersService.registerPackage(userId, packageId);
+        return ResponseEntity.ok(register);
+    }
+
+    @GetMapping("get_package")
+    public ResponseEntity<List<PackageDto>> getPackages(@RequestParam int userId){
+        List<PackageDto> packages = usersService.getUserPackages(userId);
+        return ResponseEntity.ok(packages);
+    }
 
 
 }
+
