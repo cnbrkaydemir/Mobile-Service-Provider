@@ -30,6 +30,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
     private final ModelMapper modelMapper;
 
     @Override
+    @CacheEvict(value = "all_packages", allEntries = true)
     public PackageDto createPackage(PackageInfo packageInfo) {
         packageInfo.setCreatedDate(new Date());
         packageInfo.setCreatedBy("admin");
@@ -40,7 +41,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
     }
 
     @Override
-    @Cacheable("packages")
+    @Cacheable("all_packages")
     public List<PackageDto> getAllPackages() {
         List<PackageInfo> packages = packageInfoRepository.findAll();
 
@@ -62,7 +63,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
     }
 
     @Override
-    @CacheEvict("packages")
+    @CacheEvict(value = {"packages", "all_packages"}, allEntries = true)
     public boolean deletePackage(int id) {
         Optional<PackageInfo> target = packageInfoRepository.findById(id);
 
