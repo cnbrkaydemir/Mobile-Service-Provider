@@ -11,6 +11,9 @@ import com.mobile_service_provider.service.UsersPackageCreditService;
 import com.mobile_service_provider.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -45,6 +48,7 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
+    @Cacheable("users")
     public List<UsersDto> getAllUsers() {
         List<Users> users = usersRepository.findAll();
 
@@ -54,6 +58,7 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
+    @Cacheable("users")
     public UsersDto getUser(int id) {
         Optional<Users> target = usersRepository.findById(id);
 
@@ -64,6 +69,7 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
+    @CacheEvict("users")
     public boolean deleteUser(int id) {
 
         Optional<Users> target = usersRepository.findById(id);
@@ -101,6 +107,8 @@ public class UsersServiceImpl implements UsersService {
 
     }
 
+    @Override
+    @Cacheable("userPackage")
     public List<PackageDto> getUserPackages(int id){
         Optional<Users> target = usersRepository.findById(id);
 

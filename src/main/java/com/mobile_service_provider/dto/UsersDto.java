@@ -6,11 +6,12 @@ import com.mobile_service_provider.model.UsersPackageCredit;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
 @Data
-public class UsersDto {
+public class UsersDto implements Serializable {
 
     private int id;
 
