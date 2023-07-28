@@ -16,7 +16,7 @@ public class PackageTypeCredit extends BaseEntity{
     @Column(name = "package_credit_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(name = "ptype_seqGen", sequenceName = "ptype_seq")
-    private int creditId;
+    private int packageCreditId;
 
     @ManyToOne
     @JoinColumn(name = "package_id")

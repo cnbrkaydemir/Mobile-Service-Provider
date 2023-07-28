@@ -1,15 +1,11 @@
 
 package com.mobile_service_provider.model;
         import jakarta.persistence.*;
-        import lombok.Data;
-        import lombok.EqualsAndHashCode;
         import lombok.Getter;
         import lombok.Setter;
 
         import java.math.BigDecimal;
-        import java.util.Date;
         import java.util.List;
-        import java.util.Set;
 
 
 @Entity

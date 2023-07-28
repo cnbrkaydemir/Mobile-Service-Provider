@@ -1,13 +1,13 @@
 package com.mobile_service_provider.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 @Entity
 @Table(name = "user_package_credit")
 public class UsersPackageCredit  extends BaseEntity{
@@ -15,7 +15,7 @@ public class UsersPackageCredit  extends BaseEntity{
     @Column(name = "user_credit_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(name = "utype_seqGen", sequenceName = "utype_seq", initialValue = 1)
-    private int creditId;
+    private int userPackageId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

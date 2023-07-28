@@ -21,4 +21,7 @@ public interface PackageInfoService {
 
     List<CreditDto> getPackageCredit (int id);
 
+
+    boolean checkActive(PackageInfo packageInfo);
+
 }

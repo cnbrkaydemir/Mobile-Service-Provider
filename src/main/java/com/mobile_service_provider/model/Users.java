@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.Set;
+
 
 
 
@@ -45,7 +45,7 @@ public class Users extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private UserGroup userGroup;
 
-    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.PERSIST)
     private List<PackageInfo> packageInfos;
 
     @OneToMany(mappedBy = "users", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

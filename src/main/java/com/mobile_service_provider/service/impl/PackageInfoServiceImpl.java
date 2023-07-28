@@ -7,6 +7,7 @@ import com.mobile_service_provider.model.PackageInfo;
 import com.mobile_service_provider.repository.CreditRepository;
 import com.mobile_service_provider.repository.PackageInfoRepository;
 import com.mobile_service_provider.service.PackageInfoService;
+import com.mobile_service_provider.service.PackageTypeCreditService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,8 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 
     private final CreditRepository creditRepository;
 
+    private final PackageTypeCreditService packageTypeCreditService;
+
     private final ModelMapper modelMapper;
 
     @Override
@@ -29,7 +32,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
         packageInfo.setCreatedDate(new Date());
         packageInfo.setCreatedBy("admin");
         packageInfo.setStartDate(new Date());
-        packageInfo.setActive(true);
+        this.checkActive(packageInfo);
 
         return modelMapper.map(packageInfoRepository.save(packageInfo), PackageDto.class);
     }
@@ -77,6 +80,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
                 credit.setPackageInfo(pack.get());
                 pack.get().getCredits().add(credit);
                 creditRepository.save(credit);
+                packageTypeCreditService.fillPackageTypeCredits(pack.get(), credit);
 
             });
 
@@ -97,6 +101,27 @@ public class PackageInfoServiceImpl implements PackageInfoService {
         return null;
 
       }
+
+    @Override
+    public boolean checkActive(PackageInfo packageInfo) {
+        Date currentDate = new Date();
+
+        if(currentDate.compareTo(packageInfo.getEndDate()) > 0 ){
+            packageInfo.setActive(false);
+            packageInfoRepository.save(packageInfo);
+            return false;
+        }
+        else{
+            packageInfo.setActive(true);
+            packageInfoRepository.save(packageInfo);
+
+            return true;
+        }
+
+    }
+
+
+
 
 
 }
