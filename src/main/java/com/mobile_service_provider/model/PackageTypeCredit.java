@@ -3,6 +3,8 @@ package com.mobile_service_provider.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 
@@ -18,10 +20,12 @@ public class PackageTypeCredit extends BaseEntity{
     @SequenceGenerator(name = "ptype_seqGen", sequenceName = "ptype_seq")
     private int packageCreditId;
 
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne
     @JoinColumn(name = "package_id")
     private PackageInfo packageInfo;
 
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne
     @JoinColumn(name = "credit_id")
     private Credit credits;

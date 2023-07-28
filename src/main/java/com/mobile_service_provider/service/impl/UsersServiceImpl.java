@@ -33,6 +33,7 @@ public class UsersServiceImpl implements UsersService {
     private final ModelMapper modelMapper;
 
     @Override
+    @CacheEvict(value = "all_users", allEntries = true)
     public UsersDto createUser(Users newUser) {
         newUser.setCreatedBy("admin");
 
@@ -48,7 +49,7 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    @Cacheable("users")
+    @Cacheable(value = "all_users")
     public List<UsersDto> getAllUsers() {
         List<Users> users = usersRepository.findAll();
 
@@ -69,12 +70,13 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    @CacheEvict("users")
+    @CacheEvict(value = {"users", "all_users"}, allEntries = true)
     public boolean deleteUser(int id) {
 
         Optional<Users> target = usersRepository.findById(id);
 
         if(target.isPresent()){
+            target.get().setPackageInfos(null);
             usersRepository.deleteById(id);
             return true;
         }

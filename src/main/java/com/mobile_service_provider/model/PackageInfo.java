@@ -2,6 +2,9 @@ package com.mobile_service_provider.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -45,19 +48,19 @@ public class PackageInfo extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private PackageGroup packageGroup;
 
+
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToMany(cascade = CascadeType.PERSIST)
     private List<Users> users;
 
-
-    @OneToMany(mappedBy = "packageInfo", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "packageInfo", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Credit> credits;
 
 
-    @OneToMany(mappedBy = "packageInfo", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "packageInfo", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PackageTypeCredit> packageTypeCredits;
 
-
-    @OneToMany(mappedBy = "packageInfo", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "packageInfo", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UsersPackageCredit> usersPackageCredits;
 
 

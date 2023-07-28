@@ -2,6 +2,8 @@ package com.mobile_service_provider.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Date;
 import java.util.List;
@@ -45,6 +47,7 @@ public class Users extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private UserGroup userGroup;
 
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToMany(mappedBy = "users", cascade = CascadeType.PERSIST)
     private List<PackageInfo> packageInfos;
 

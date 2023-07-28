@@ -4,8 +4,8 @@ import com.mobile_service_provider.dto.CreditDto;
 import com.mobile_service_provider.dto.PackageDto;
 import com.mobile_service_provider.model.Credit;
 import com.mobile_service_provider.model.PackageInfo;
-import com.mobile_service_provider.repository.CreditRepository;
 import com.mobile_service_provider.repository.PackageInfoRepository;
+import com.mobile_service_provider.service.CreditService;
 import com.mobile_service_provider.service.PackageInfoService;
 import com.mobile_service_provider.service.PackageTypeCreditService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 
     private final PackageInfoRepository packageInfoRepository;
 
-    private final CreditRepository creditRepository;
+    private final CreditService creditService;
 
     private final PackageTypeCreditService packageTypeCreditService;
 
@@ -52,7 +52,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
     @Override
     @Cacheable("packages")
     public PackageDto getPackage(int id) {
-        System.out.println("---------------------------------------- Db Fetched This Result ---------------------------");
         Optional<PackageInfo> packageInfo = packageInfoRepository.findById(id);
 
         if(packageInfo.isPresent())
@@ -68,6 +67,10 @@ public class PackageInfoServiceImpl implements PackageInfoService {
         Optional<PackageInfo> target = packageInfoRepository.findById(id);
 
         if(target.isPresent()){
+            target.get().setUsers(null);
+            target.get().setCredits(null);
+            target.get().setUsersPackageCredits(null);
+            target.get().setPackageTypeCredits(null);
             packageInfoRepository.deleteById(id);
             return true;
         }
@@ -75,6 +78,8 @@ public class PackageInfoServiceImpl implements PackageInfoService {
         return false;
 
     }
+
+
 
       public boolean fillCredits(int id , List<Credit> credits){
         Optional<PackageInfo> pack = packageInfoRepository.findById(id);
@@ -85,7 +90,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
             credits.forEach(credit -> {
                 credit.setPackageInfo(pack.get());
                 pack.get().getCredits().add(credit);
-                creditRepository.save(credit);
+                creditService.saveCredit(credit);
                 packageTypeCreditService.fillPackageTypeCredits(pack.get(), credit);
 
             });
@@ -97,7 +102,18 @@ public class PackageInfoServiceImpl implements PackageInfoService {
             return false;
       }
 
-      @Override
+    @Override
+    public boolean deleteCredits(int id) {
+        Optional<PackageInfo> targetPackage = packageInfoRepository.findById(id);
+
+        if(targetPackage.isPresent()){
+            targetPackage.get().getCredits().forEach(credit-> creditService.deleteCredit(credit.getId()));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
       public List<CreditDto> getPackageCredit (int id){
         Optional<PackageInfo> pack = packageInfoRepository.findById(id);
 
