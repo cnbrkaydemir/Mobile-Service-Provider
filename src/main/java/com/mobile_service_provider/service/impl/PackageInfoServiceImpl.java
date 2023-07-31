@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -29,19 +30,26 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 
     private final ModelMapper modelMapper;
 
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
     @Override
-    @CacheEvict(value = "all_packages", allEntries = true)
+    @CacheEvict(value = "packages", allEntries = true)
     public PackageDto createPackage(PackageInfo packageInfo) {
         packageInfo.setCreatedDate(new Date());
         packageInfo.setCreatedBy("admin");
         packageInfo.setStartDate(new Date());
         this.checkActive(packageInfo);
 
+        String notificationMessage = "Package %s  has been created successfully.\n The package name is %s";
+        System.out.println("Package(" + packageInfo.getId() +") has been created with name : " + packageInfo.getName());
+        String senderMessage = String.format(notificationMessage, packageInfo.getId(), packageInfo.getName());
+        kafkaTemplate.send("create-package",  senderMessage);
+
         return modelMapper.map(packageInfoRepository.save(packageInfo), PackageDto.class);
     }
 
     @Override
-    @Cacheable("all_packages")
+    @Cacheable("packages")
     public List<PackageDto> getAllPackages() {
         List<PackageInfo> packages = packageInfoRepository.findAll();
 
@@ -63,7 +71,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
     }
 
     @Override
-    @CacheEvict(value = {"packages", "all_packages"}, allEntries = true)
+    @CacheEvict(value = "packages", allEntries = true)
     public boolean deletePackage(int id) {
         Optional<PackageInfo> target = packageInfoRepository.findById(id);
 
@@ -73,6 +81,14 @@ public class PackageInfoServiceImpl implements PackageInfoService {
             target.get().setUsersPackageCredits(null);
             target.get().setPackageTypeCredits(null);
             packageInfoRepository.deleteById(id);
+
+            String deleteMessage = "Package( %d ) has been deleted successfully. ";
+            System.out.println("Package " + target.get().getName() +" was deleted. ");
+            String senderMessage = String.format(deleteMessage, target.get().getId() );
+            kafkaTemplate.send("delete-package",  senderMessage);
+
+
+
             return true;
         }
 
@@ -103,16 +119,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
             return false;
       }
 
-    @Override
-    public boolean deleteCredits(int id) {
-        Optional<PackageInfo> targetPackage = packageInfoRepository.findById(id);
-
-        if(targetPackage.isPresent()){
-            targetPackage.get().getCredits().forEach(credit-> creditService.deleteCredit(credit.getId()));
-            return true;
-        }
-        return false;
-    }
 
     @Override
       public List<CreditDto> getPackageCredit (int id){
@@ -143,9 +149,5 @@ public class PackageInfoServiceImpl implements PackageInfoService {
         }
 
     }
-
-
-
-
 
 }

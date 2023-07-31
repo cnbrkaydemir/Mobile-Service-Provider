@@ -59,7 +59,7 @@ public class PackageInfoController {
     }
 
 
-    @PostMapping("/get_credits")
+    @GetMapping("/get_credits")
     public ResponseEntity<List<CreditDto>> getCredits(@RequestParam int packageId){
         List<CreditDto> credits = packageInfoService.getPackageCredit(packageId);
         return ResponseEntity.ok(credits);

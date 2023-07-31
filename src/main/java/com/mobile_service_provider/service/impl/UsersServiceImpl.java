@@ -1,7 +1,9 @@
 package com.mobile_service_provider.service.impl;
 
+import com.mobile_service_provider.dto.CreditDto;
 import com.mobile_service_provider.dto.PackageDto;
 import com.mobile_service_provider.dto.UsersDto;
+import com.mobile_service_provider.model.CreditType;
 import com.mobile_service_provider.model.PackageInfo;
 import com.mobile_service_provider.model.UserGroup;
 import com.mobile_service_provider.model.Users;
@@ -12,10 +14,11 @@ import com.mobile_service_provider.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +35,10 @@ public class UsersServiceImpl implements UsersService {
 
     private final ModelMapper modelMapper;
 
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
     @Override
-    @CacheEvict(value = "all_users", allEntries = true)
+    @CacheEvict(value = "users", allEntries = true)
     public UsersDto createUser(Users newUser) {
         newUser.setCreatedBy("admin");
 
@@ -45,11 +50,17 @@ public class UsersServiceImpl implements UsersService {
 
         checkStudent(false, newUser);
 
+        String notificationMessage = "%s your Account has been created successfully.";
+        System.out.println("User account for " + newUser.getName() +" has been created");
+        String senderMessage = String.format(notificationMessage, newUser.getName(),  newUser.getId() );
+        kafkaTemplate.send("create-user",  senderMessage);
+
+
         return modelMapper.map(usersRepository.save(newUser), UsersDto.class);
     }
 
     @Override
-    @Cacheable(value = "all_users")
+    @Cacheable(value = "users")
     public List<UsersDto> getAllUsers() {
         List<Users> users = usersRepository.findAll();
 
@@ -70,7 +81,7 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    @CacheEvict(value = {"users", "all_users"}, allEntries = true)
+    @CacheEvict(value = "users", allEntries = true)
     public boolean deleteUser(int id) {
 
         Optional<Users> target = usersRepository.findById(id);
@@ -78,6 +89,13 @@ public class UsersServiceImpl implements UsersService {
         if(target.isPresent()){
             target.get().setPackageInfos(null);
             usersRepository.deleteById(id);
+
+            String deleteMessage = "%s your Account has been deleted successfully.";
+            System.out.println("User "+target.get().getId()+" was deleted.");
+            String senderMessage = String.format(deleteMessage, target.get().getName());
+            kafkaTemplate.send("delete-user",  senderMessage);
+
+
             return true;
         }
 
@@ -100,6 +118,12 @@ public class UsersServiceImpl implements UsersService {
             packageInfoRepository.save(targetPackage.get());
 
             usersPackageCreditService.fillUserPackageCredits(targetUser.get(), targetPackage.get());
+
+            String registeredMessage = "Dear %s, package %s has been registered to your account.";
+            System.out.println("User " + targetUser.get().getId() +" had the following package registered : " + targetPackage.get().getId());
+            String senderMessage = String.format(registeredMessage, targetUser.get().getName(), targetPackage.get().getName());
+            kafkaTemplate.send("register-package",  senderMessage);
+
 
             return true;
 
@@ -148,4 +172,27 @@ public class UsersServiceImpl implements UsersService {
         return false;
     }
 
+    @Override
+    @CacheEvict(value = "users_credit", allEntries = true)
+    public void updateCredits(int userId, CreditType creditType, BigDecimal amount){
+        Optional<Users> targetUser = usersRepository.findById(userId);
+
+        targetUser.ifPresentOrElse(users -> usersPackageCreditService.updateUserCredits(users, creditType, amount),
+                () -> System.out.println("Could not update credits"));
+
+    }
+
+    @Override
+    @Cacheable("users_credit")
+    public List<CreditDto> getRemainingCredits(Users user){
+        return usersPackageCreditService.getUserCredits(user).stream().map( credit -> modelMapper.map(credit, CreditDto.class)).toList();
+    }
+
+    @Override
+    public Users getById(int id) {
+         Optional<Users> target = usersRepository.findById(id);
+
+        return target.orElse(null);
+
+    }
 }

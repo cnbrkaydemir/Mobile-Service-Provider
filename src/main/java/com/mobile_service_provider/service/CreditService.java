@@ -6,7 +6,6 @@ import com.mobile_service_provider.model.Credit;
 public interface CreditService {
 
 
-    boolean deleteCredit(int creditId);
 
     CreditDto getCredit(int creditId);
 

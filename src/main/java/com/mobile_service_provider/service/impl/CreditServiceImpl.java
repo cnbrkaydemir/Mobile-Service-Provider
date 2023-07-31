@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -18,18 +18,7 @@ public class CreditServiceImpl implements CreditService {
 
     private final ModelMapper modelMapper;
 
-    @Override
-    public boolean deleteCredit(int creditId) {
-        Optional<Credit> creditOptional = creditRepository.findById(creditId);
 
-        if (creditOptional.isPresent()){
-            creditOptional.get().setPackageTypeCredits(null);
-            creditOptional.get().setUsersPackageCredits(null);
-            creditRepository.delete(creditOptional.get());
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public CreditDto getCredit(int creditId) {

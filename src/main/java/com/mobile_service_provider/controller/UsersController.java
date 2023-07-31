@@ -1,7 +1,9 @@
 package com.mobile_service_provider.controller;
 
+import com.mobile_service_provider.dto.CreditDto;
 import com.mobile_service_provider.dto.PackageDto;
 import com.mobile_service_provider.dto.UsersDto;
+import com.mobile_service_provider.model.CreditType;
 import com.mobile_service_provider.model.Users;
 import com.mobile_service_provider.service.UsersService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -60,6 +63,19 @@ public class UsersController {
         return ResponseEntity.ok(packages);
     }
 
+
+    @PostMapping("update_credits")
+    public ResponseEntity<List<CreditDto>> updatePackages(@RequestParam int userId, @RequestBody CreditDto creditDto){
+        usersService.updateCredits(userId, creditDto.getCreditType(), creditDto.getCreditAmount());
+
+        return ResponseEntity.ok(usersService.getRemainingCredits(usersService.getById(userId)));
+    }
+
+    @GetMapping("get_credits")
+    public ResponseEntity<List<CreditDto>> getCredits(@RequestParam int userId){
+        Users target = usersService.getById(userId);
+        return ResponseEntity.ok(usersService.getRemainingCredits(target));
+    }
 
 }
 

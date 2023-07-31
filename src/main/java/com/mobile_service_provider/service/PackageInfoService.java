@@ -19,7 +19,6 @@ public interface PackageInfoService {
 
     boolean fillCredits(int id , List<Credit> credits);
 
-    boolean deleteCredits(int id);
 
     List<CreditDto> getPackageCredit (int id);
 
