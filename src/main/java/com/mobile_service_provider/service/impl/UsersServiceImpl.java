@@ -1,8 +1,6 @@
 package com.mobile_service_provider.service.impl;
 
-import com.mobile_service_provider.dto.CreditDto;
-import com.mobile_service_provider.dto.PackageDto;
-import com.mobile_service_provider.dto.UsersDto;
+import com.mobile_service_provider.dto.*;
 import com.mobile_service_provider.model.CreditType;
 import com.mobile_service_provider.model.PackageInfo;
 import com.mobile_service_provider.model.UserGroup;
@@ -19,6 +17,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +49,7 @@ public class UsersServiceImpl implements UsersService {
 
         checkStudent(false, newUser);
 
-        String notificationMessage = "%s your Account has been created successfully.";
+        String notificationMessage = "%s your account has been created successfully.";
         System.out.println("User account for " + newUser.getName() +" has been created");
         String senderMessage = String.format(notificationMessage, newUser.getName(),  newUser.getId() );
         kafkaTemplate.send("create-user",  senderMessage);
@@ -90,7 +89,7 @@ public class UsersServiceImpl implements UsersService {
             target.get().setPackageInfos(null);
             usersRepository.deleteById(id);
 
-            String deleteMessage = "%s your Account has been deleted successfully.";
+            String deleteMessage = "%s your account has been deleted successfully.";
             System.out.println("User "+target.get().getId()+" was deleted.");
             String senderMessage = String.format(deleteMessage, target.get().getName());
             kafkaTemplate.send("delete-user",  senderMessage);
@@ -134,7 +133,7 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    @Cacheable("userPackage")
+    @Cacheable("users_credit")
     public List<PackageDto> getUserPackages(int id){
         Optional<Users> target = usersRepository.findById(id);
 
@@ -174,18 +173,42 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     @CacheEvict(value = "users_credit", allEntries = true)
-    public void updateCredits(int userId, CreditType creditType, BigDecimal amount){
-        Optional<Users> targetUser = usersRepository.findById(userId);
+    public void updateCredits(UsersPackageCreditDto userCredits){
+        Optional<Users> targetUser = usersRepository.findById(userCredits.getUserId());
+        Optional<PackageInfo> targetPack = packageInfoRepository.findById(userCredits.getPackageId());
 
-        targetUser.ifPresentOrElse(users -> usersPackageCreditService.updateUserCredits(users, creditType, amount),
-                () -> System.out.println("Could not update credits"));
+        if(targetUser.isPresent() && targetPack.isPresent()){
+            usersPackageCreditService.updateUserCredits(targetUser.get(), targetPack.get(), userCredits);
+
+
+            String transaction = "%s has used %.2f %s from package %s.";
+            System.out.println("User "+targetUser.get().getId()+" has used "+userCredits.getCreditAmount()+" "+userCredits.getCreditType()+" from package "+ targetPack.get().getId());
+            String senderMessage = String.format(transaction, targetUser.get().getName(), userCredits.getCreditAmount(), userCredits.getCreditType(), targetPack.get().getName());
+            kafkaTemplate.send("transactions",  senderMessage);
+
+
+        }
+
+        else{
+           System.out.println("Could not update credits");
+        }
+
 
     }
 
     @Override
     @Cacheable("users_credit")
-    public List<CreditDto> getRemainingCredits(Users user){
-        return usersPackageCreditService.getUserCredits(user).stream().map( credit -> modelMapper.map(credit, CreditDto.class)).toList();
+    public List<CreditDto> getRemainingCredits(UserPackageDto userPackageDto){
+
+        Optional<Users> targetUser = usersRepository.findById(userPackageDto.getUserId());
+        Optional<PackageInfo> targetPack = packageInfoRepository.findById(userPackageDto.getPackageId());
+
+        if(targetUser.isPresent() && targetPack.isPresent()){
+            return usersPackageCreditService.getUserCredits(targetUser.get(), targetPack.get()).stream().map( credit -> modelMapper.map(credit, CreditDto.class)).toList();
+        }
+
+        return new ArrayList<>();
+
     }
 
     @Override

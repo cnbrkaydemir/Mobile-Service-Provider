@@ -1,5 +1,6 @@
 package com.mobile_service_provider.service;
 
+import com.mobile_service_provider.dto.UsersPackageCreditDto;
 import com.mobile_service_provider.model.CreditType;
 import com.mobile_service_provider.model.PackageInfo;
 import com.mobile_service_provider.model.Users;
@@ -13,8 +14,10 @@ public interface UsersPackageCreditService {
     void fillUserPackageCredits(Users user, PackageInfo packageInfo);
 
 
-    void updateUserCredits(Users user, CreditType creditType, BigDecimal amount);
+    void updateUserCredits(Users user, PackageInfo pack, UsersPackageCreditDto userCredit);
 
-    List<UsersPackageCredit> getUserCredits(Users user);
+    List<UsersPackageCredit> getUserCredits(Users user, PackageInfo packageInfo);
+
+
 
 }

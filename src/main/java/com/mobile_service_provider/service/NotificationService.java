@@ -4,4 +4,7 @@ public interface NotificationService {
 
     public void consume(String message);
 
+    public void consumeTransaction(String transaction);
+
+
 }

@@ -1,5 +1,6 @@
 package com.mobile_service_provider.repository;
 
+import com.mobile_service_provider.model.PackageInfo;
 import com.mobile_service_provider.model.Users;
 import com.mobile_service_provider.model.UsersPackageCredit;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,5 +12,7 @@ import java.util.List;
 public interface UsersPackageCreditRepository  extends JpaRepository<UsersPackageCredit, Integer> {
 
     List<UsersPackageCredit> findUsersPackageCreditByUsers(Users user);
+
+    List<UsersPackageCredit> findByUsersAndPackageInfo(Users users, PackageInfo packageInfo);
 
 }
