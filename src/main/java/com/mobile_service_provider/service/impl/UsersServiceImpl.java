@@ -1,26 +1,22 @@
 package com.mobile_service_provider.service.impl;
 
 import com.mobile_service_provider.dto.*;
-import com.mobile_service_provider.model.CreditType;
-import com.mobile_service_provider.model.PackageInfo;
-import com.mobile_service_provider.model.UserGroup;
-import com.mobile_service_provider.model.Users;
+import com.mobile_service_provider.model.*;
 import com.mobile_service_provider.repository.PackageInfoRepository;
 import com.mobile_service_provider.repository.UsersRepository;
 import com.mobile_service_provider.service.UsersPackageCreditService;
 import com.mobile_service_provider.service.UsersService;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,11 +30,25 @@ public class UsersServiceImpl implements UsersService {
 
     private final ModelMapper modelMapper;
 
+    private PasswordEncoder passwordEncoder;
+
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Override
     @CacheEvict(value = "users", allEntries = true)
     public UsersDto createUser(Users newUser) {
+
+        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+
+        Authority userAuthority= new Authority("ROLE_USER",newUser);
+
+        Set<Authority> userAuthorities= new HashSet<>();
+
+        userAuthorities.add(userAuthority);
+
+        newUser.setAuthorities(userAuthorities);
+
+
         newUser.setCreatedBy("admin");
 
         newUser.setCreatedDate(new Date());
@@ -218,4 +228,16 @@ public class UsersServiceImpl implements UsersService {
         return target.orElse(null);
 
     }
+
+    @Override
+    public Optional<Users> findByUserEmail(String email) {
+        Optional<Users> target = usersRepository.findByEmail(email);
+
+        if(target.isPresent()){
+            return target;
+        }
+
+        return Optional.empty();
+    }
+
 }

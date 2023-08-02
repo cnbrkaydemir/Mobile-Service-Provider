@@ -7,8 +7,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Date;
 import java.util.List;
-
-
+import java.util.Set;
 
 
 @Entity
@@ -47,12 +46,22 @@ public class Users extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private UserGroup userGroup;
 
+    @Column(name = "password")
+    private String password;
+
+
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToMany(mappedBy = "users", cascade = CascadeType.PERSIST)
     private List<PackageInfo> packageInfos;
 
+
     @OneToMany(mappedBy = "users", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<UsersPackageCredit> credits;
+
+
+
+    @OneToMany(mappedBy="users",fetch=FetchType.EAGER)
+    private Set<Authority> authorities;
 
 
 

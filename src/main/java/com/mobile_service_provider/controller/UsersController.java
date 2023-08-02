@@ -19,11 +19,12 @@ public class UsersController {
     private final UsersService usersService;
 
 
-    @PostMapping("/create")
+    @PostMapping("/register")
     public ResponseEntity<UsersDto> createUser(@RequestBody Users newUser){
         UsersDto usersDto =  usersService.createUser(newUser);
         return ResponseEntity.ok(usersDto);
     }
+
 
 
     @GetMapping("/get/{id}")
@@ -53,14 +54,14 @@ public class UsersController {
         return ResponseEntity.ok(register);
     }
 
-    @GetMapping("get_package")
+    @GetMapping("/get_package")
     public ResponseEntity<List<PackageDto>> getPackages(@RequestParam int userId){
         List<PackageDto> packages = usersService.getUserPackages(userId);
         return ResponseEntity.ok(packages);
     }
 
 
-    @PostMapping("update_credits")
+    @PostMapping("/update_credits")
     public ResponseEntity<List<CreditDto>> updatePackages(@RequestBody UsersPackageCreditDto userCredit){
         usersService.updateCredits(userCredit);
 
@@ -69,7 +70,7 @@ public class UsersController {
         return ResponseEntity.ok(usersService.getRemainingCredits(updated));
     }
 
-    @GetMapping("get_credits")
+    @GetMapping("/get_credits")
     public ResponseEntity<List<CreditDto>> getCredits(@RequestBody UserPackageDto userPackageDto){
         return ResponseEntity.ok(usersService.getRemainingCredits(userPackageDto));
     }

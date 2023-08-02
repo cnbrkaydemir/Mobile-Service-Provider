@@ -4,9 +4,11 @@ import com.mobile_service_provider.dto.*;
 import com.mobile_service_provider.model.CreditType;
 import com.mobile_service_provider.model.UserGroup;
 import com.mobile_service_provider.model.Users;
+import org.apache.catalina.User;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface UsersService {
     UsersDto createUser(Users user);
@@ -28,6 +30,8 @@ public interface UsersService {
     List<CreditDto> getRemainingCredits(UserPackageDto userPackageDto);
 
     Users getById(int id);
+
+    Optional<Users> findByUserEmail(String email);
 
 
 
