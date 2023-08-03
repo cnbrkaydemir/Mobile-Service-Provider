@@ -5,6 +5,7 @@ import com.mobile_service_provider.model.CreditType;
 import com.mobile_service_provider.model.UserGroup;
 import com.mobile_service_provider.model.Users;
 import org.apache.catalina.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.math.BigDecimal;
 import java.util.List;

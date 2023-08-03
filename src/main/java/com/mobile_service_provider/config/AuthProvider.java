@@ -24,6 +24,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class AuthProvider implements AuthenticationProvider {
 
+
+
     private final UsersRepository usersRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -36,8 +38,9 @@ public class AuthProvider implements AuthenticationProvider {
         Optional<Users> target=usersRepository.findByEmail(email);
 
         if(target.isPresent()){
+            String s = target.get().getPassword();
             if(passwordEncoder.matches(pwd,target.get().getPassword())){
-                return new UsernamePasswordAuthenticationToken(email,pwd,getGrantedAuthorities(target.get().getAuthorities()));
+                return new UsernamePasswordAuthenticationToken(email,pwd,getGrantedAuthorities((Set<Authority>) target.get().getAuthorities()));
             }
             throw new BadCredentialsException("Invalid password!");
         }
@@ -56,6 +59,6 @@ public class AuthProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return false;
+        return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
 }

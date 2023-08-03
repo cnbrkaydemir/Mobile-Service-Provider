@@ -55,12 +55,13 @@ public class Users extends BaseEntity{
     private List<PackageInfo> packageInfos;
 
 
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @OneToMany(mappedBy = "users", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<UsersPackageCredit> credits;
 
 
-
-    @OneToMany(mappedBy="users",fetch=FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(mappedBy="users",fetch=FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Authority> authorities;
 
 

@@ -1,5 +1,6 @@
 package com.mobile_service_provider.service.impl;
 
+
 import com.mobile_service_provider.dto.*;
 import com.mobile_service_provider.model.*;
 import com.mobile_service_provider.repository.PackageInfoRepository;
@@ -7,20 +8,25 @@ import com.mobile_service_provider.repository.UsersRepository;
 import com.mobile_service_provider.service.UsersPackageCreditService;
 import com.mobile_service_provider.service.UsersService;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
+import org.springframework.security.core.userdetails.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UsersServiceImpl implements UsersService {
+public class UsersServiceImpl implements UsersService{
 
     private final UsersRepository usersRepository;
 
@@ -30,7 +36,8 @@ public class UsersServiceImpl implements UsersService {
 
     private final ModelMapper modelMapper;
 
-    private PasswordEncoder passwordEncoder;
+
+    private final PasswordEncoder passwordEncoder;
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
@@ -40,6 +47,7 @@ public class UsersServiceImpl implements UsersService {
 
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
+
         Authority userAuthority= new Authority("ROLE_USER",newUser);
 
         Set<Authority> userAuthorities= new HashSet<>();
@@ -47,7 +55,6 @@ public class UsersServiceImpl implements UsersService {
         userAuthorities.add(userAuthority);
 
         newUser.setAuthorities(userAuthorities);
-
 
         newUser.setCreatedBy("admin");
 
@@ -65,7 +72,9 @@ public class UsersServiceImpl implements UsersService {
         kafkaTemplate.send("create-user",  senderMessage);
 
 
-        return modelMapper.map(usersRepository.save(newUser), UsersDto.class);
+
+
+        return modelMapper.map( usersRepository.save(newUser), UsersDto.class);
     }
 
     @Override
@@ -239,5 +248,6 @@ public class UsersServiceImpl implements UsersService {
 
         return Optional.empty();
     }
+
 
 }

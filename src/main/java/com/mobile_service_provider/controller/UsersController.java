@@ -1,5 +1,6 @@
 package com.mobile_service_provider.controller;
 
+
 import com.mobile_service_provider.dto.*;
 import com.mobile_service_provider.model.Users;
 import com.mobile_service_provider.service.UsersService;
@@ -17,6 +18,7 @@ public class UsersController {
 
 
     private final UsersService usersService;
+
 
 
     @PostMapping("/register")

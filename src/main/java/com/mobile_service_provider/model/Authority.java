@@ -3,6 +3,7 @@ package com.mobile_service_provider.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -11,7 +12,7 @@ import java.io.Serializable;
 @Table(name = "authorities")
 @Getter
 @Setter
-
+@NoArgsConstructor
 public class Authority implements Serializable {
 
     @Id
