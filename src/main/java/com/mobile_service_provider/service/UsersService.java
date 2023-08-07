@@ -1,6 +1,7 @@
 package com.mobile_service_provider.service;
 
 import com.mobile_service_provider.dto.*;
+import com.mobile_service_provider.model.Authority;
 import com.mobile_service_provider.model.CreditType;
 import com.mobile_service_provider.model.UserGroup;
 import com.mobile_service_provider.model.Users;
@@ -8,8 +9,7 @@ import org.apache.catalina.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public interface UsersService {
     UsersDto createUser(Users user);
@@ -30,10 +30,7 @@ public interface UsersService {
     void updateCredits(UsersPackageCreditDto userCredits);
     List<CreditDto> getRemainingCredits(UserPackageDto userPackageDto);
 
-    Users getById(int id);
-
-    Optional<Users> findByUserEmail(String email);
-
+    public UsersDto createAdmin(Users newUser);
 
 
 }

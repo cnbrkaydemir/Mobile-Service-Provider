@@ -48,7 +48,7 @@ public class UsersServiceImpl implements UsersService{
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
 
-        Authority userAuthority= new Authority("ROLE_USER",newUser);
+        Authority userAuthority= new Authority("USER",newUser);
 
         Set<Authority> userAuthorities= new HashSet<>();
 
@@ -76,6 +76,31 @@ public class UsersServiceImpl implements UsersService{
 
         return modelMapper.map( usersRepository.save(newUser), UsersDto.class);
     }
+
+    @Override
+    @CacheEvict(value= "users")
+    public UsersDto createAdmin(Users admin) {
+
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+
+
+        Authority userAuthority= new Authority("ADMIN",admin);
+
+        Set<Authority> userAuthorities= new HashSet<>();
+
+        userAuthorities.add(userAuthority);
+
+        admin.setAuthorities(userAuthorities);
+
+        admin.setUserGroup(UserGroup.GOLD);
+
+        admin.setStatus("active");
+
+        checkStudent(false, admin);
+
+        return modelMapper.map( usersRepository.save(admin), UsersDto.class);
+    }
+
 
     @Override
     @Cacheable(value = "users")
@@ -228,25 +253,6 @@ public class UsersServiceImpl implements UsersService{
 
         return new ArrayList<>();
 
-    }
-
-    @Override
-    public Users getById(int id) {
-         Optional<Users> target = usersRepository.findById(id);
-
-        return target.orElse(null);
-
-    }
-
-    @Override
-    public Optional<Users> findByUserEmail(String email) {
-        Optional<Users> target = usersRepository.findByEmail(email);
-
-        if(target.isPresent()){
-            return target;
-        }
-
-        return Optional.empty();
     }
 
 

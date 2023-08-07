@@ -50,11 +50,11 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/user/delete/{id}", "/user/update_credits", "/user/get/{id}","/user/get_all").hasRole("ADMIN")
-                        .requestMatchers("/user/register_package ","/user/get_package", "/user/get_credits").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/user/register_package","/user/get_package", "/user/get_credits").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.POST, "/package/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/package/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/package/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/user/register", "/token").permitAll()
+                        .requestMatchers("/user/register", "/login").permitAll()
                 )
 
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -90,7 +90,7 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter(){
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
+        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("authorities");
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
         jwtConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);

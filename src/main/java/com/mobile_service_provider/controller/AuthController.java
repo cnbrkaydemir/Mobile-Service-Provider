@@ -14,10 +14,10 @@ public class AuthController {
 
     private final TokenService tokenService;
 
-    @PostMapping("/token")
-    public String  token(Authentication authentication){
+    @PostMapping("/login")
+    public ResponseEntity<String>  token(Authentication authentication){
         String token = tokenService.generateJwt(authentication);
-        return token;
+        return ResponseEntity.ok(token);
     }
 
 
