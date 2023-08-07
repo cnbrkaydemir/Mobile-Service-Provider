@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -15,8 +16,9 @@ public class AuthController {
 
     @PostMapping("/token")
     public String  token(Authentication authentication){
-        String token = tokenService.generateToken(authentication);
+        String token = tokenService.generateJwt(authentication);
         return token;
     }
+
 
 }

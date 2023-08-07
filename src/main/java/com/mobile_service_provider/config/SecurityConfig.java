@@ -1,15 +1,18 @@
 package com.mobile_service_provider.config;
 
 
+import com.mobile_service_provider.utils.RSAKeyProperties;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,6 +24,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -28,14 +33,13 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
 
-    private final RsaKeyProperties rsaKeys ;
+    private final RSAKeyProperties keys ;
 
-    public SecurityConfig(RsaKeyProperties rsaKeys) {
-        this.rsaKeys = rsaKeys;
-    }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -44,18 +48,19 @@ public class SecurityConfig {
                 .sessionManagement( session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
 
-            .authorizeHttpRequests((authz) -> authz
-
-                    .requestMatchers("/user/delete/{id}", "/user/update_credits", "/user/get/{id}","/user/get_all").hasRole("ADMIN")
-                    .requestMatchers("/user/register_package ","/user/get_package", "/user/get_credits").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(HttpMethod.POST, "/package/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/package/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.GET, "/package/**").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers("/user/register", "/token").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/package/**").authenticated()
-
+                .authorizeHttpRequests((authz) -> authz
+                        .requestMatchers("/user/delete/{id}", "/user/update_credits", "/user/get/{id}","/user/get_all").hasRole("ADMIN")
+                        .requestMatchers("/user/register_package ","/user/get_package", "/user/get_credits").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/package/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/package/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/package/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/user/register", "/token").permitAll()
                 )
-                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                        ))
 
                 .httpBasic(withDefaults());
 
@@ -70,14 +75,26 @@ public class SecurityConfig {
 
 
     @Bean
-    JwtDecoder jwtDecoder(){
-        return NimbusJwtDecoder.withPublicKey(rsaKeys.publicKey()).build();
+    public JwtDecoder jwtDecoder(){
+        return NimbusJwtDecoder.withPublicKey(keys.getPublicKey()).build();
     }
 
     @Bean
-    JwtEncoder jwtEncoder(){
-        JWK jwk = new RSAKey.Builder(rsaKeys.publicKey()).privateKey(rsaKeys.privateKey()).build();
+    public JwtEncoder jwtEncoder(){
+        JWK jwk = new RSAKey.Builder(keys.getPublicKey()).privateKey(keys.getPrivateKey()).build();
         JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
         return new NimbusJwtEncoder(jwks);
     }
+
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter(){
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
+        jwtConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+        return jwtConverter;
+    }
+
 }

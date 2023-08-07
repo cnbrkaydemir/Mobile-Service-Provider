@@ -1,7 +1,6 @@
 package com.mobile_service_provider;
 
 
-import com.mobile_service_provider.config.RsaKeyProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -14,7 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @EnableJpaRepositories("com.mobile_service_provider.repository")
 @EnableCaching
 @EnableWebSecurity
-@EnableConfigurationProperties(RsaKeyProperties.class)
 @ComponentScans({ @ComponentScan("com.mobile_service_provider.controller"), @ComponentScan("com.mobile_service_provider.config")})
 @SpringBootApplication
 public class TelecommunicationProjectApplication {

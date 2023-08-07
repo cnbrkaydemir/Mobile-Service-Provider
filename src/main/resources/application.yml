@@ -29,6 +29,3 @@ spring:
       bootstrap-servers: localhost:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-rsa:
-  private-key: classpath:certs/private.pem
-  public-key: classpath:certs/public.pem
