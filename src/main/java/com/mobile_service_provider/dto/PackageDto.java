@@ -19,4 +19,15 @@ public class PackageDto  implements Serializable {
 
     private PackageGroup packageGroup;
 
+
+    public static PackageDto of(PackageInfo packageInfo){
+        PackageDto packageDto = new PackageDto();
+        packageDto.setDuration(packageInfo.getDuration());
+        packageDto.setPackageGroup(packageInfo.getPackageGroup());
+        packageDto.setId(packageInfo.getId());
+        packageDto.setPrice(packageInfo.getPrice());
+        return packageDto;
+    }
+
+
 }

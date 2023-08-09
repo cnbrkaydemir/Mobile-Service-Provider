@@ -2,6 +2,7 @@
 package com.mobile_service_provider.model;
         import jakarta.persistence.*;
         import lombok.Getter;
+        import lombok.NoArgsConstructor;
         import lombok.Setter;
         import org.hibernate.annotations.OnDelete;
         import org.hibernate.annotations.OnDeleteAction;
@@ -14,6 +15,7 @@ package com.mobile_service_provider.model;
 @Table(name = "credits")
 @Setter
 @Getter
+@NoArgsConstructor
 public class Credit extends BaseEntity{
 
     @Id
@@ -43,5 +45,9 @@ public class Credit extends BaseEntity{
     private List<UsersPackageCredit> usersPackageCredits;
 
 
-
+    public Credit(CreditType creditType, BigDecimal creditAmount, PackageInfo packageInfo) {
+        this.creditType = creditType;
+        this.creditAmount = creditAmount;
+        this.packageInfo = packageInfo;
+    }
 }

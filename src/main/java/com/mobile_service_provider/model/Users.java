@@ -31,6 +31,9 @@ public class Users extends BaseEntity{
     @Column(name = "user_email", nullable = false)
     private String email;
 
+    @Column(name = "password", nullable = false)
+    private String password;
+
     @Column(name = "user_date_of_birth")
     private Date dateOfBirth;
 
@@ -46,8 +49,6 @@ public class Users extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private UserGroup userGroup;
 
-    @Column(name = "password")
-    private String password;
 
 
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -65,5 +66,11 @@ public class Users extends BaseEntity{
     private Set<Authority> authorities;
 
 
+    public Users(String name, String phoneNumber, String email, String password) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.password = password;
+    }
 
 }

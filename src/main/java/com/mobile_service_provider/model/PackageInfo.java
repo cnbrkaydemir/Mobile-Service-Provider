@@ -1,6 +1,7 @@
 package com.mobile_service_provider.model;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -16,6 +17,7 @@ import java.util.List;
 @Table(name = "package_info")
 @Getter
 @Setter
+@NoArgsConstructor
 public class PackageInfo extends BaseEntity{
 
     @Id
@@ -64,5 +66,12 @@ public class PackageInfo extends BaseEntity{
     private List<UsersPackageCredit> usersPackageCredits;
 
 
+    public PackageInfo(String name, byte duration, Date startDate, Date endDate, BigDecimal price, boolean isActive) {
+        this.name = name;
+        this.duration = duration;
+        this.endDate = endDate;
+        this.price = price;
+        this.isActive = isActive;
+    }
 
 }
