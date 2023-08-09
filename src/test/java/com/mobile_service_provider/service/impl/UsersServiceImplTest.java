@@ -239,8 +239,7 @@ class UsersServiceImplTest {
         Mockito.when(packageInfoRepository.findById(118)).thenReturn(Optional.of(pack));
         Mockito.when(modelMapper.map(pack, PackageDto.class)).thenReturn(PackageDto.of(pack));
         Mockito.when(modelMapper.map(emptyCredit, CreditDto.class)).thenReturn(CreditDto.of(emptyCredit));
-        Mockito.when(usersPackageCreditService.getUserCredits(dummyUser, pack))
-                .thenReturn(pack.getUsersPackageCredits());
+        Mockito.when(usersPackageCreditService.getUserCredits(dummyUser, pack)).thenReturn(pack.getUsersPackageCredits());
 
         usersService.registerPackage(118, 118);
 
