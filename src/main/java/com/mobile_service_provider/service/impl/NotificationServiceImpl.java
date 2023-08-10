@@ -17,7 +17,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final TransactionLogRepository transactionLogRepository;
 
-    @KafkaListener(topics = {"create-package", "delete-package", "register-package", "delete-user", "create-user"}, groupId = "group-id")
+    @KafkaListener(topics = {"create-package", "delete-package", "register-package", "delete-user", "create-user","request-response"}, groupId = "group-id")
     public void consume(String message){
         logger.info(String.format("Message receiver \n  %s", message));
     }
