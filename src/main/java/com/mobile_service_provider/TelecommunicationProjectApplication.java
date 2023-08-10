@@ -9,8 +9,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScans;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableJpaRepositories("com.mobile_service_provider.repository")
+@EnableTransactionManagement
 @EnableCaching
 @EnableWebSecurity
 @ComponentScans({ @ComponentScan("com.mobile_service_provider.controller"), @ComponentScan("com.mobile_service_provider.config")})

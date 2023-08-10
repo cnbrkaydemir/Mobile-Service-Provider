@@ -9,6 +9,7 @@ import com.mobile_service_provider.service.CreditService;
 import com.mobile_service_provider.service.PackageInfoService;
 import com.mobile_service_provider.service.PackageTypeCreditService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -59,6 +60,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
     }
 
     @Override
+    @Transactional
     @Cacheable("packages")
     public PackageDto getPackage(int id) {
         Optional<PackageInfo> packageInfo = packageInfoRepository.findById(id);
@@ -71,6 +73,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
     }
 
     @Override
+    @Transactional
     @CacheEvict(value = "packages", allEntries = true)
     public boolean deletePackage(int id) {
         Optional<PackageInfo> target = packageInfoRepository.findById(id);
@@ -97,7 +100,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
     }
 
 
-
+    @Transactional
       public boolean fillCredits(int id , List<Credit> credits){
         Optional<PackageInfo> pack = packageInfoRepository.findById(id);
 
@@ -121,6 +124,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 
 
     @Override
+    @Transactional
       public List<CreditDto> getPackageCredit (int id){
         Optional<PackageInfo> pack = packageInfoRepository.findById(id);
 

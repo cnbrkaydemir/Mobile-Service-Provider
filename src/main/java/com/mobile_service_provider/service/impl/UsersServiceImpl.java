@@ -19,6 +19,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -42,6 +44,7 @@ public class UsersServiceImpl implements UsersService{
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     @CacheEvict(value = "users", allEntries = true)
     public UsersDto createUser(Users newUser) {
 
@@ -78,6 +81,7 @@ public class UsersServiceImpl implements UsersService{
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     @CacheEvict(value= "users")
     public UsersDto createAdmin(Users admin) {
 
@@ -103,6 +107,7 @@ public class UsersServiceImpl implements UsersService{
 
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     @Cacheable(value = "users")
     public List<UsersDto> getAllUsers() {
         List<Users> users = usersRepository.findAll();
@@ -113,6 +118,7 @@ public class UsersServiceImpl implements UsersService{
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     @Cacheable("users")
     public UsersDto getUser(int id) {
         Optional<Users> target = usersRepository.findById(id);
@@ -124,6 +130,7 @@ public class UsersServiceImpl implements UsersService{
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @CacheEvict(value = "users", allEntries = true)
     public boolean deleteUser(int id) {
 
@@ -146,6 +153,7 @@ public class UsersServiceImpl implements UsersService{
     }
 
     @Override
+    @Transactional
     public boolean registerPackage(int userId, int packageId) {
         Optional<Users> targetUser = usersRepository.findById(userId);
 
@@ -177,6 +185,7 @@ public class UsersServiceImpl implements UsersService{
     }
 
     @Override
+    @Transactional
     @Cacheable("users_credit")
     public List<PackageDto> getUserPackages(int id){
         Optional<Users> target = usersRepository.findById(id);
@@ -203,6 +212,7 @@ public class UsersServiceImpl implements UsersService{
     }
 
     @Override
+    @Transactional
     public boolean switchUserGroup(UserGroup userGroup, Users user) {
         if(user.getUserGroup() != userGroup){
             user.setUserGroup(userGroup);
